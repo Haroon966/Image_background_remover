@@ -3,3 +3,4 @@ rembg
 Pillow
 werkzeug
 uuid
+gunicorn
