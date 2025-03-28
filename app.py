@@ -1,9 +1,10 @@
-from flask import Flask, request, render_template, send_from_directory, jsonify
+from flask import Flask, request, render_template, send_file, jsonify
 from rembg import remove
 from PIL import Image
 import os
 import uuid
 from werkzeug.utils import secure_filename
+from io import BytesIO
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -11,7 +12,6 @@ app = Flask(__name__)
 # Configure upload and output folders
 UPLOAD_FOLDER = 'uploads'
 OUTPUT_FOLDER = 'static/output'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 # Create directories if they don't exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -19,11 +19,7 @@ os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['OUTPUT_FOLDER'] = OUTPUT_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload size
-
-def allowed_file(filename):
-    """Check if the file has an allowed extension"""
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+app.config['MAX_CONTENT_LENGTH'] = None  # Remove size restriction
 
 @app.route('/')
 def index():
@@ -48,33 +44,23 @@ def remove_background():
     if file.filename == '':
         return jsonify({'error': 'No selected file'}), 400
     
-    # Process if file is valid
-    if file and allowed_file(file.filename):
-        # Generate unique filename
-        filename = str(uuid.uuid4()) + '.' + secure_filename(file.filename).rsplit('.', 1)[1].lower()
-        input_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(input_path)
-        
-        # Process the image
+    # Process the file without saving
+    if file:
         try:
-            input_image = Image.open(input_path)
+            input_image = Image.open(file.stream)
             output_image = remove(input_image)
             
-            # Save with transparent background
-            output_filename = filename.rsplit('.', 1)[0] + '.png'
-            output_path = os.path.join(app.config['OUTPUT_FOLDER'], output_filename)
-            output_image.save(output_path)
+            # Save the processed image to a BytesIO stream
+            output_stream = BytesIO()
+            output_image.save(output_stream, format="PNG")
+            output_stream.seek(0)
             
-            return jsonify({
-                'success': True,
-                'input_url': f'/uploads/{filename}',
-                'output_url': f'/static/output/{output_filename}'
-            })
+            # Return the processed image directly
+            return send_file(output_stream, mimetype='image/png', as_attachment=True, download_name='processed_image.png')
         except Exception as e:
             return jsonify({'error': str(e)}), 500
     
     return jsonify({'error': 'File type not allowed'}), 400
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))  # Default to 5000 if PORT is not set
-    app.run(host="0.0.0.0", port=port)
+    app.run(debug=True)
