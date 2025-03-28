@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Background Remover</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Background <span>Remover</span></h1>
+            <p>Remove image backgrounds instantly with AI</p>
+        </header>
+        
+        <main>
+            <div class="upload-section">
+                <div id="drop-area" class="drop-area">
+                    <div class="upload-icon">
+                        <i class="bi bi-cloud-upload"></i>
+                    </div>
+                    <p>Drag & drop your image here</p>
+                    <span>or</span>
+                    <label for="file-input" class="upload-btn">Choose File</label>
+                    <input type="file" id="file-input" accept="image/png, image/jpeg, image/jpg" hidden>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress" id="progress"></div>
+                    </div>
+                    <p id="progress-text">Processing: 0%</p>
+                </div>
+            </div>
+            
+            <div class="result-container" id="result-container">
+                <h2>Results</h2>
+                <div class="image-comparison">
+                    <div class="image-box">
+                        <h3>Original</h3>
+                        <div class="img-wrapper">
+                            <img id="original-image" src="" alt="Original Image">
+                        </div>
+                    </div>
+                    <div class="image-box">
+                        <h3>Background Removed</h3>
+                        <div class="img-wrapper">
+                            <img id="result-image" src="" alt="Background Removed">
+                        </div>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <a id="download-btn" class="primary-btn" download="background-removed.png">
+                        <i class="bi bi-download"></i> Download
+                    </a>
+                    <button id="process-another-btn" class="secondary-btn">
+                        <i class="bi bi-arrow-repeat"></i> Process Another
+                    </button>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>Created by <a href="https://www.linkedin.com/in/haroon-ali-04861b328/" target="_blank">Haroon Ali</a></p>
+            <div class="social-links">
+                <a href="https://github.com/Haroon966" target="_blank" class="social-link">
+                    <i class="bi bi-github"></i>
+                </a>
+                <a href="https://linkedin.com/in/haroon-ali-04861b328/" target="_blank" class="social-link">
+                    <i class="bi bi-linkedin"></i>
+                </a>
+                <a href="https://instagram.com/yourusername" target="_blank" class="social-link">
+                    <i class="bi bi-instagram"></i>
+                </a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html> 
