@@ -39,7 +39,7 @@ UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
 OUTPUT_FOLDER = os.path.join(BASE_DIR, 'static', 'output')
 
 # Create directories
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 # App configuration
@@ -150,10 +150,11 @@ def not_found(error):
 def ratelimit_handler(error):
     return jsonify({'error': 'Rate limit exceeded'}), 429
 
+# Only for local development; Gunicorn handles this in production
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.environ.get('PORT', 5000))  # Use PORT from env or default to 5000
     app.run(
-        host='0.0.0.0',
+        host='0.0.0.0',  # Bind to all interfaces
         port=port,
         debug=os.environ.get('FLASK_ENV') == 'development',
         threaded=True
